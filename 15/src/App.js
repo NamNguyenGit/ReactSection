@@ -6,7 +6,6 @@ function App() {
   return (
     <React.Fragment>
       <ForwardCounter />
-      <p>jo</p>
       <BackwardCounter />
     </React.Fragment>
   );
