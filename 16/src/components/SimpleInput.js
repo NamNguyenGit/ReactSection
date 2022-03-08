@@ -1,6 +1,10 @@
 import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
+  const isNotEmpty = (value) => value.trim() !== "";
+  const atLeast5Characters = (value) => value.length > 5;
+  const emailSyntax = (value) => value.includes("@");
+
   const {
     value: enteredName,
     hasError: nameInputHasError,
@@ -8,7 +12,7 @@ const SimpleInput = (props) => {
     valueChangeHandler: nameChangedHandler,
     inputBlurHandler: nameBlurHandler,
     reset: resetNameInput,
-  } = useInput((value) => value.trim() !== "");
+  } = useInput(isNotEmpty);
 
   const {
     value: enteredEmail,
@@ -17,22 +21,32 @@ const SimpleInput = (props) => {
     valueChangeHandler: emailChangedHandler,
     inputBlurHandler: emailBlurHandler,
     reset: resetEmailInput,
-  } = useInput((value) => value.includes("@"));
+  } = useInput(emailSyntax);
+
+  const {
+    value: enteredPassword,
+    hasError: passwordInputHasError,
+    isValid: enteredPasswordIsValid,
+    valueChangeHandler: passwordChangedHandler,
+    inputBlurHandler: passwordBlurHandler,
+    reset: resetPasswordInput,
+  } = useInput(atLeast5Characters);
 
   let formIsValid = false;
 
-  if (enteredNameIsValid && enteredEmailIsValid) {
+  if (enteredNameIsValid && enteredEmailIsValid && enteredPasswordIsValid) {
     formIsValid = true;
   }
 
   const formSubmissionHandler = (e) => {
     e.preventDefault();
-    if (!enteredNameIsValid) {
+    if (!formIsValid) {
       return;
     }
 
     resetNameInput();
     resetEmailInput();
+    resetPasswordInput();
   };
 
   const nameInputClasses = nameInputHasError
@@ -40,6 +54,10 @@ const SimpleInput = (props) => {
     : "form-control ";
 
   const emailInputClasses = emailInputHasError
+    ? "form-control invalid"
+    : "form-control";
+
+  const passwordInputClasses = passwordInputHasError
     ? "form-control invalid"
     : "form-control";
 
@@ -69,6 +87,21 @@ const SimpleInput = (props) => {
         />
         {emailInputHasError && (
           <p className="error-text">Please enter a valid email.</p>
+        )}
+      </div>
+      <div className={passwordInputClasses}>
+        <label htmlFor="email">Your Password</label>
+        <input
+          type="password"
+          id="password"
+          onChange={passwordChangedHandler}
+          onBlur={passwordBlurHandler}
+          value={enteredPassword}
+        />
+        {passwordInputHasError && (
+          <p className="error-text">
+            Please enter a password has at least 5 characters.
+          </p>
         )}
       </div>
       <div className="form-actions">
